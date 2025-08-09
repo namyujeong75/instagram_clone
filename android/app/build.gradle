@@ -1,0 +1,25 @@
+
+apply plugin: 'com.android.application'
+apply from: "../../flutter/packages/flutter_tools/gradle/flutter.gradle"
+
+android {
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "com.example.instagram_clone"
+        minSdkVersion 19
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
