@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/feed_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/create_post_page.dart';
-import 'pages/auth_page.dart';
+import 'pages/login_page.dart';
 import 'providers/post_provider.dart';
+import 'providers/auth_provider.dart';
 import 'services/hive_service.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await HiveService.init();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -22,6 +28,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PostProvider()..loadPosts()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
         title: 'Instagram Clone',
@@ -30,12 +37,21 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         routes: {
-          '/auth': (_) => const AuthPage(),
           '/create': (_) => const CreatePostPage(),
         },
-        home: const RootScaffold(),
+        home: const RootRouter(),
       ),
     );
+  }
+}
+
+class RootRouter extends StatelessWidget {
+  const RootRouter({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isSignedIn = context.watch<AuthProvider>().isSignedIn;
+    return isSignedIn ? const RootScaffold() : const LoginPage();
   }
 }
 

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/post_provider.dart';
-import '../services/hive_service.dart';
+import '../providers/auth_provider.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final String username = (HiveService.getSettingsBox().get('username') as String?) ?? 'Guest';
+    final user = context.watch<AuthProvider>().user;
+    final String username = (user?.displayName ?? user?.email ?? 'Guest');
     final posts = context.watch<PostProvider>().postsByUser(username);
     return Scaffold(
       appBar: AppBar(title: const Text('프로필')),

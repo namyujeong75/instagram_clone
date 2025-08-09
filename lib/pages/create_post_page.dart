@@ -1,12 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/post_provider.dart';
-import '../services/hive_service.dart';
+import '../providers/auth_provider.dart';
 
 class CreatePostPage extends StatefulWidget {
   const CreatePostPage({super.key});
@@ -43,11 +42,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
       return;
     }
     final String caption = _captionController.text.trim();
-    final Box settings = HiveService.getSettingsBox();
-    final String? username = settings.get('username') as String?;
+    final user = context.read<AuthProvider>().user;
+    final String? username = user?.displayName ?? user?.email;
     if (username == null || username.isEmpty) {
-      if (!mounted) return;
-      Navigator.of(context).pushNamed('/auth');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('로그인 후 이용해주세요.')),
+      );
       return;
     }
     setState(() => _saving = true);
